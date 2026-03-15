@@ -1,0 +1,501 @@
+openapi: 3.1.0
+info:
+  title: Api
+  version: 0.1.0
+  description: Fiyat Dedektifi API
+servers:
+  - url: /api
+    description: Base API path
+tags:
+  - name: health
+    description: Health operations
+  - name: products
+    description: Product operations
+  - name: prices
+    description: Price history operations
+  - name: scrape
+    description: Web scraping operations
+  - name: storage
+    description: File storage operations
+paths:
+  /healthz:
+    get:
+      operationId: healthCheck
+      tags: [health]
+      summary: Health check
+      responses:
+        "200":
+          description: Healthy
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/HealthStatus"
+
+  /products/search:
+    get:
+      operationId: searchProducts
+      tags: [products]
+      summary: Search products
+      parameters:
+        - name: q
+          in: query
+          required: false
+          schema:
+            type: string
+        - name: category
+          in: query
+          required: false
+          schema:
+            type: string
+      responses:
+        "200":
+          description: List of matching products
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/ProductSummary"
+
+  /products/{id}:
+    get:
+      operationId: getProduct
+      tags: [products]
+      summary: Get product details
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Product detail with price history
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProductDetail"
+        "404":
+          description: Product not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+
+  /products:
+    post:
+      operationId: createProduct
+      tags: [products]
+      summary: Create a product
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateProductInput"
+      responses:
+        "201":
+          description: Created product
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProductDetail"
+
+  /products/{id}/prices:
+    post:
+      operationId: addPriceEntry
+      tags: [prices]
+      summary: Add a price entry
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/AddPriceInput"
+      responses:
+        "201":
+          description: Price entry added
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/PriceEntry"
+
+  /products/{id}/refresh:
+    post:
+      operationId: refreshProductPrice
+      tags: [products]
+      summary: Re-scrape and update product price
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Updated price entry
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/RefreshResult"
+        "404":
+          description: Product not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "400":
+          description: Cannot refresh (no store URL or scraping failed)
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+
+  /categories:
+    get:
+      operationId: getCategories
+      tags: [products]
+      summary: Get all categories
+      responses:
+        "200":
+          description: List of categories
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: string
+
+  /scrape:
+    get:
+      operationId: scrapeUrl
+      tags: [scrape]
+      summary: Scrape product data from URL
+      parameters:
+        - name: url
+          in: query
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Scraped product data
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ScrapedProduct"
+        "400":
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "422":
+          description: Could not extract product data
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+
+  /storage/uploads/request-url:
+    post:
+      operationId: requestUploadUrl
+      tags: [storage]
+      summary: Request a presigned upload URL
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/RequestUploadUrlBody"
+      responses:
+        "200":
+          description: Presigned upload URL
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/RequestUploadUrlResponse"
+
+components:
+  schemas:
+    HealthStatus:
+      type: object
+      properties:
+        status:
+          type: string
+      required:
+        - status
+
+    ErrorResponse:
+      type: object
+      properties:
+        error:
+          type: string
+      required:
+        - error
+
+    ProductSummary:
+      type: object
+      properties:
+        id:
+          type: integer
+        name:
+          type: string
+        brand:
+          type: string
+        category:
+          type: string
+        imageUrl:
+          type: string
+          nullable: true
+        currentPrice:
+          type: number
+          format: float
+        originalPrice:
+          type: number
+          format: float
+        lowestPrice:
+          type: number
+          format: float
+        highestPrice:
+          type: number
+          format: float
+        discountPercent:
+          type: number
+          format: float
+        isFakeDiscount:
+          type: boolean
+        store:
+          type: string
+        lastUpdated:
+          type: string
+          format: date-time
+      required:
+        - id
+        - name
+        - brand
+        - category
+        - currentPrice
+        - originalPrice
+        - lowestPrice
+        - highestPrice
+        - discountPercent
+        - isFakeDiscount
+        - store
+        - lastUpdated
+
+    PriceEntry:
+      type: object
+      properties:
+        id:
+          type: integer
+        productId:
+          type: integer
+        price:
+          type: number
+          format: float
+        recordedAt:
+          type: string
+          format: date-time
+        note:
+          type: string
+          nullable: true
+      required:
+        - id
+        - productId
+        - price
+        - recordedAt
+
+    ProductDetail:
+      type: object
+      properties:
+        id:
+          type: integer
+        name:
+          type: string
+        brand:
+          type: string
+        category:
+          type: string
+        description:
+          type: string
+          nullable: true
+        imageUrl:
+          type: string
+          nullable: true
+        store:
+          type: string
+        storeUrl:
+          type: string
+          nullable: true
+        currentPrice:
+          type: number
+          format: float
+        originalPrice:
+          type: number
+          format: float
+        lowestPrice:
+          type: number
+          format: float
+        highestPrice:
+          type: number
+          format: float
+        discountPercent:
+          type: number
+          format: float
+        isFakeDiscount:
+          type: boolean
+        priceHistory:
+          type: array
+          items:
+            $ref: "#/components/schemas/PriceEntry"
+        createdAt:
+          type: string
+          format: date-time
+      required:
+        - id
+        - name
+        - brand
+        - category
+        - store
+        - currentPrice
+        - originalPrice
+        - lowestPrice
+        - highestPrice
+        - discountPercent
+        - isFakeDiscount
+        - priceHistory
+        - createdAt
+
+    CreateProductInput:
+      type: object
+      properties:
+        name:
+          type: string
+        brand:
+          type: string
+        category:
+          type: string
+        description:
+          type: string
+          nullable: true
+        imageUrl:
+          type: string
+          nullable: true
+        store:
+          type: string
+        storeUrl:
+          type: string
+          nullable: true
+        initialPrice:
+          type: number
+          format: float
+        originalPrice:
+          type: number
+          format: float
+      required:
+        - name
+        - brand
+        - category
+        - store
+        - initialPrice
+        - originalPrice
+
+    AddPriceInput:
+      type: object
+      properties:
+        price:
+          type: number
+          format: float
+        note:
+          type: string
+          nullable: true
+      required:
+        - price
+
+    RefreshResult:
+      type: object
+      properties:
+        success:
+          type: boolean
+        newPrice:
+          type: number
+          format: float
+        previousPrice:
+          type: number
+          format: float
+        changed:
+          type: boolean
+        message:
+          type: string
+      required:
+        - success
+        - newPrice
+        - previousPrice
+        - changed
+        - message
+
+    ScrapedProduct:
+      type: object
+      properties:
+        name:
+          type: string
+          nullable: true
+        brand:
+          type: string
+          nullable: true
+        currentPrice:
+          type: number
+          format: float
+          nullable: true
+        originalPrice:
+          type: number
+          format: float
+          nullable: true
+        imageUrl:
+          type: string
+          nullable: true
+        description:
+          type: string
+          nullable: true
+        store:
+          type: string
+          nullable: true
+        storeUrl:
+          type: string
+        category:
+          type: string
+          nullable: true
+      required:
+        - storeUrl
+
+    RequestUploadUrlBody:
+      type: object
+      properties:
+        name:
+          type: string
+        size:
+          type: integer
+        contentType:
+          type: string
+      required:
+        - name
+        - size
+        - contentType
+
+    RequestUploadUrlResponse:
+      type: object
+      properties:
+        uploadURL:
+          type: string
+        objectPath:
+          type: string
+      required:
+        - uploadURL
+        - objectPath

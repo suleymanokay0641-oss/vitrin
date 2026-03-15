@@ -1,0 +1,20 @@
+packages:
+  "framer-motion": "Smooth page transitions and micro-interactions"
+  "recharts": "Drawing the interactive price history charts"
+  "clsx": "Utility for constructing className strings conditionally"
+  "tailwind-merge": "Utility to safely merge Tailwind classes without style conflicts"
+  "react-hook-form": "Form state management and validation"
+  "@hookform/resolvers": "Zod integration for react-hook-form"
+
+images:
+  - path: "artifacts/price-tracker/public/images/hero-bg.png"
+    description: "Abstract subtle gradient background with deep trustworthy blue and soft light gray, modern financial tech style, sleek, high resolution, minimalist"
+    aspect_ratio: "16:9"
+  - path: "artifacts/price-tracker/public/images/logo.png"
+    description: "Minimalist geometric magnifying glass logo combined with a price tag, deep blue primary color, clean white background, modern app icon design"
+    aspect_ratio: "1:1"
+
+notes:
+  - Application assumes API endpoints are available under standard proxy paths.
+  - Orval generated hooks from @workspace/api-client-react are fully typed.
+  - Zod schemas from the API specification are used for form validation where applicable.

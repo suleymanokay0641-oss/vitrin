@@ -1,0 +1,56 @@
+uploads = []
+generated = []
+
+[[outputs]]
+id = "YsgMWA9wVYPMKcsYOJace"
+uri = "file://attached_assets/icon_v1_monogram.png"
+type = "image"
+title = "Seçenek 1 — Mor Gradyan + 'V' Monogram"
+
+[[outputs]]
+id = "FH3uPSTbgxnCUANskTIpm"
+uri = "file://attached_assets/icon_v2_vitrine.png"
+type = "image"
+title = "Seçenek 2 — Lacivert + Vitrin Penceresi"
+
+[[outputs]]
+id = "smoV4XLNuS0weJy6mUAX8"
+uri = "file://attached_assets/icon_v3_link.png"
+type = "image"
+title = "Seçenek 3 — Mercan/Pembe + Link Sembolü"
+
+[[outputs]]
+id = "ZeMLaPR18s37kWaZa8Sdb"
+uri = "file://attached_assets/icon_v4_check.png"
+type = "image"
+title = "Seçenek 4 — Yeşil/Mavi + 'V' Tik İşareti"
+
+[[outputs]]
+id = "a0zt7BqW_vS97CSRWrxHL"
+uri = "file://artifacts/vitrin-mobile/assets/images/icon.png"
+type = "image"
+title = "Uygulama İkonu"
+
+[[outputs]]
+id = "x151mci4P5vdbA6HT6lYX"
+uri = "file://artifacts/vitrin-mobile/assets/images/splash-icon.png"
+type = "image"
+title = "Splash Screen"
+
+[[outputs]]
+id = "kN9buJ8ueKbW37w6oCv_O"
+uri = "file://VİTRİN — Sistem Rehberi.md"
+type = "text"
+title = "VİTRİN — Tam Sistem Rehberi"
+
+[[outputs]]
+id = "l4eRGVCEAMZerJXynTokN"
+uri = "file://VİTRİN — Sistem Rehberi.pdf"
+type = "pdf"
+title = "VİTRİN — Sistem Rehberi (PDF)"
+
+[[outputs]]
+id = "w4ZRKKVP3Ryfa4Ai_76sQ"
+uri = "file://VİTRİN — Ödül Sistemi.pdf"
+type = "pdf"
+title = "VİTRİN — Ödül Sistemi Rehberi (PDF)"
