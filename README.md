@@ -18,6 +18,8 @@ Türk URL-katkı kazanç platformu. Kullanıcılar ürün URL'leri ekler, kişis
 
 ### 1. Repoyu klonlayın
 
+**GitHub Repo:** [https://github.com/suleymanokay0641-oss/vitrin](https://github.com/suleymanokay0641-oss/vitrin)
+
 ```bash
 git clone https://github.com/suleymanokay0641-oss/vitrin.git
 cd vitrin
@@ -125,18 +127,28 @@ pnpm push
 
 Bu komut Drizzle ORM şemalarını kullanarak tüm tabloları (29 tablo) PostgreSQL'e yükler.
 
-### Mevcut verileri Replit'ten dışa aktarma
+### Mevcut verileri yedekten geri yükleme
 
-Replit ortamında aşağıdaki komutu çalıştırarak veritabanınızı yedekleyin:
+Repo içinde `database/backup.sql` dosyasında mevcut veritabanı yedeği bulunmaktadır (29 tablo, tüm şema ve veriler dahil).
+
+Yeni ortamda bu yedeği geri yüklemek için:
 
 ```bash
-pg_dump "$DATABASE_URL" > vitrin_backup.sql
+# Önce boş veritabanını oluşturun
+createdb vitrin
+
+# Yedeği geri yükleyin
+psql "postgresql://postgres:password@localhost:5432/vitrin" < database/backup.sql
 ```
 
-Yedek dosyasını yeni ortamda geri yüklemek için:
+Bu komutu çalıştırdıktan sonra `pnpm push` yapmanıza gerek yoktur — yedek dosyası zaten tüm tabloları ve verileri içerir.
+
+### Yeni yedek almak (opsiyonel)
+
+Replit ortamında veritabanınızın güncel bir yedeğini almak için:
 
 ```bash
-psql "postgresql://postgres:password@localhost:5432/vitrin" < vitrin_backup.sql
+pg_dump "$DATABASE_URL" > database/backup.sql
 ```
 
 ---
