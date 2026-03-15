@@ -19,7 +19,7 @@ Türk URL-katkı kazanç platformu. Kullanıcılar ürün URL'leri ekler, kişis
 ### 1. Repoyu klonlayın
 
 ```bash
-git clone https://github.com/KULLANICI/vitrin.git
+git clone https://github.com/suleymanokay0641-oss/vitrin.git
 cd vitrin
 ```
 
